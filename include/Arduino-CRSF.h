@@ -33,6 +33,7 @@
 // Basic setup
 #define CRSF_MAX_CHANNEL 16
 #define CRSF_FRAME_SIZE_MAX 64
+#define CRSF_CONNECTION_TIMEOUT 1000
 
 // Device address & type, The address means the destination of the data packet, so for decoder, the destination is the FC.
 #define CRSF_TYPE_SETTINGS_WRITE 0x2D
@@ -42,8 +43,8 @@
 
 // Define channel input limite
 #define CRSF_CHANNEL_MIN 172
-#define CRSF_CHANNEL_MID 991
-#define CRSF_CHANNEL_MAX 1811
+#define CRSF_CHANNEL_MID 992
+#define CRSF_CHANNEL_MAX 1810
 
 // internal crsf variables
 #define CRSF_TIME_NEEDED_PER_FRAME_US 1100 // 700 ms + 400 ms for potential ad-hoc request
@@ -67,8 +68,11 @@ private:
     uint8_t m_inBuffer[CRSF_PACKET_SIZE];
     uint8_t m_crsfData[CRSF_PACKET_SIZE];
     uint16_t m_channels[CRSF_MAX_CHANNEL];
+    unsigned long m_lastPacketReceived;
+    bool m_disconnected;
 
     void (*m_dataReceivedCallback)(const uint16_t channels[]);
+    void (*m_disconnectedCallback)();
 
     void updateChannels();
     uint8_t crsf_crc8(const uint8_t *ptr, uint8_t len) const;
@@ -81,6 +85,9 @@ public:
 
     void begin(HardwareSerial *port, unsigned long baud = 420000);
     uint16_t getChannel(uint8_t channel) const;
+    bool isConnected();
 
-    void registerOnDataReceivedCallback(void (*pCallback)(const uint16_t channels[]));
+
+    void onDataReceived(void (*pCallback)(const uint16_t channels[]));
+    void onDisconnected(void (*pCallback)());
 };

@@ -2,6 +2,7 @@
 
 CRSF::CRSF()
 {
+    m_disconnected = true;
 }
 
 CRSF::~CRSF()
@@ -61,6 +62,9 @@ void CRSF::readPacket()
                 {
                     memcpy(m_crsfData, m_inBuffer, CRSF_PACKET_SIZE);
                     // failsafe_status = CRSF_SIGNAL_OK;
+                    m_lastPacketReceived = millis();
+                    m_disconnected = false;
+                    updateChannels();
                 }
                 else
                 {
@@ -69,7 +73,15 @@ void CRSF::readPacket()
             }
         }
     }
-    updateChannels();
+
+    if (m_disconnected)
+        return;
+
+    if (m_lastPacketReceived + CRSF_CONNECTION_TIMEOUT < millis())
+    {
+        m_disconnected = true;
+        m_disconnectedCallback();
+    }
 }
 
 uint16_t CRSF::getChannel(uint8_t channel) const
@@ -130,7 +142,17 @@ uint8_t CRSF::crsf_crc8(const uint8_t *ptr, uint8_t len) const
     return crc;
 }
 
-void CRSF::registerOnDataReceivedCallback(void (*pCallback)(const uint16_t channels[]))
+void CRSF::onDataReceived(void (*pCallback)(const uint16_t channels[]))
 {
     m_dataReceivedCallback = pCallback;
+}
+
+void CRSF::onDisconnected(void (*pCallback)())
+{
+    m_disconnectedCallback = pCallback;
+}
+
+bool CRSF::isConnected()
+{
+    return m_disconnected;
 }

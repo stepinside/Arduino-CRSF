@@ -8,8 +8,8 @@ void setup()
   Serial.begin(115200);
   crsf.begin(&Serial1, 115200);
 
-  crsf.registerOnDataReceivedCallback([](const uint16_t channels[])
-                                      {
+  crsf.onDataReceived([](const uint16_t channels[])
+                      {
   char buffer[100];
   sprintf(buffer, "CH1: %d\tCH2: %d\tCH3: %d\tCH4: %d\tCH5: %d\tCH6: %d\tCH7: %d\tCH8: %d\n",
          channels[0],

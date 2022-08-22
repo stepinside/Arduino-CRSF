@@ -1,8 +1,8 @@
 {
   "name": "Arduino-CRSF",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Arduino Library for read CRSF data from a Serial Port (UART). This library can be used to read data from an EspressLRS Receiver.",
-  "keywords": "CRSF, ELRS",
+  "keywords": "CRSF, ELRS, EspressLRS",
   "repository": {
     "type": "git",
     "url": "https://github.com/stepinside/Arduino-CRSF.git"
